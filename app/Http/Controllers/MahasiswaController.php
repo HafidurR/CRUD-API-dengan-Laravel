@@ -12,14 +12,18 @@ class MahasiswaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $limit = ($request->has('limit')) ? $request->query('limit') : 5;
+        $mahasiswas = Mahasiswa::paginate($limit, ['id', 'nim', 'nama', 'jurusan']);
         return response([
             'status' => 'success',
             'message' => 'success get all data',
-            'data' => Mahasiswa::get([
-                'id', 'nim', 'nama'
-            ])
+            'data' => $mahasiswas
+        ], 200, [
+            'x-data-total' => Mahasiswa::count(),
+            'x-pagination-limit-perpage' => $limit,
+            'x-pagination-total-page' => $$mahasiswas->lastPage()
         ]);
     }
 
